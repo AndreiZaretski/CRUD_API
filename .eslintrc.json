@@ -24,8 +24,12 @@
     "no-debugger": "off",
     "no-console": 0,
     "class-methods-use-this": "off",
+    "import/extensions": "off",
     "@typescript-eslint/no-explicit-any": "error",
-    "semi-style": ["error", "last"]
+    "semi-style": ["error", "last"],
+    "node/no-unsupported-features/es-syntax":"off",
+    "node/no-missing-import": "off"
+    //["error", { "allowModules": ["types.d.ts"] }]
   },
   "ignorePatterns": [
     "**/*.js",

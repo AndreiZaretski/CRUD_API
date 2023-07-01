@@ -1,4 +1,12 @@
-// eslint-disable-next-line node/no-unsupported-features/es-syntax, node/no-missing-import
-import './2';
+import http from 'http';
+import dotenv from 'dotenv';
+import { router } from './router/router';
 
-console.log('hello from index.ts');
+dotenv.config();
+
+const server = http.createServer(router);
+
+const port = process.env.PORT;
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
