@@ -3,11 +3,15 @@ import { db } from '../db';
 import { User, UserDataRequest } from '../types';
 
 export class HelpController {
-  static async getAllUsers() {
+  static async getArrayFromDb() {
     return Array.from(db.values());
   }
 
-  static createUser(data: UserDataRequest): User {
+  static async getUserFromDbById(id: string) {
+    return db.get(id);
+  }
+
+  static addUserOnDb(data: UserDataRequest): User {
     const id = uuidv4();
     const user: User = {
       id,
@@ -17,5 +21,24 @@ export class HelpController {
     };
     db.set(id, user);
     return user;
+  }
+
+  static checkUserExistInDb(id: string) {
+    return db.has(id);
+  }
+
+  static updateUserInDb(data: UserDataRequest, id: string) {
+    const updateUserData: User = {
+      id,
+      username: data.username,
+      age: data.age,
+      hobbies: data.hobbies,
+    };
+    db.set(id, updateUserData);
+    return updateUserData;
+  }
+
+  static deleteUserFromDB(id: string) {
+    db.delete(id);
   }
 }
