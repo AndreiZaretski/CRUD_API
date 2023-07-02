@@ -10,3 +10,9 @@ interface UserDataRequest {
   age: number;
   hobbies: string[];
 }
+
+interface UserDataRequestTest {
+  username: string | number;
+  age: number | string;
+  hobbies: string[];
+}

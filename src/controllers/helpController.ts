@@ -13,14 +13,17 @@ export class HelpController {
 
   static addUserOnDb(data: UserDataRequest): User {
     const id = uuidv4();
+    //if (typeof data.age === 'number') {
     const user: User = {
       id,
       username: data.username,
       age: data.age,
       hobbies: data.hobbies,
     };
+
     db.set(id, user);
     return user;
+    //}
   }
 
   static checkUserExistInDb(id: string) {

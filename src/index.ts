@@ -4,7 +4,7 @@ import { router } from './router/router';
 
 dotenv.config();
 
-const server = http.createServer(router);
+export const server = http.createServer(router);
 
 const port = process.env.PORT;
 server.listen(port, () => {

@@ -46,7 +46,9 @@ export class Controller {
           const { username, age, hobbies } = myBoDyParser(body);
           if (
             username &&
+            typeof username === 'string' &&
             age &&
+            typeof age === 'number' &&
             hobbies &&
             Array.isArray(hobbies) &&
             hobbies.every((item) => typeof item === 'string')
@@ -85,7 +87,9 @@ export class Controller {
               const { username, age, hobbies } = myBoDyParser(body);
               if (
                 username &&
+                typeof username === 'string' &&
                 age &&
+                typeof age === 'number' &&
                 hobbies &&
                 Array.isArray(hobbies) &&
                 hobbies.every((item) => typeof item === 'string')
