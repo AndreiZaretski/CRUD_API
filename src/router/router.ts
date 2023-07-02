@@ -1,6 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Controller } from '../controllers/controller';
 import { parseUrl } from '../helpers/parseUrl';
+import { responseMessages } from '../helpers/messages';
+import { sendError } from '../helpers/sendError';
 
 export async function router(req: IncomingMessage, res: ServerResponse) {
   let pathUrl = [];
@@ -20,7 +22,6 @@ export async function router(req: IncomingMessage, res: ServerResponse) {
   } else if (req.method === 'DELETE' && req.url === `/api/users/${id}` && id) {
     await Controller.deleteUser(req, res, id);
   } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not found');
+    sendError(res, 404, responseMessages.invaldRequest);
   }
 }
