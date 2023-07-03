@@ -11,7 +11,7 @@ export class HelpController {
     return db.get(id);
   }
 
-  static addUserOnDb(data: UserDataRequest): User {
+  static async addUserOnDb(data: UserDataRequest) {
     const id = uuidv4();
     //if (typeof data.age === 'number') {
     const user: User = {
@@ -26,11 +26,11 @@ export class HelpController {
     //}
   }
 
-  static checkUserExistInDb(id: string) {
+  static async checkUserExistInDb(id: string) {
     return db.has(id);
   }
 
-  static updateUserInDb(data: UserDataRequest, id: string) {
+  static async updateUserInDb(data: UserDataRequest, id: string) {
     const updateUserData: User = {
       id,
       username: data.username,
@@ -41,7 +41,14 @@ export class HelpController {
     return updateUserData;
   }
 
-  static deleteUserFromDB(id: string) {
+  static async deleteUserFromDB(id: string) {
     db.delete(id);
+  }
+
+  static replaceDB(newDB: Map<string, User>) {
+    db.clear();
+    for (const [id, user] of newDB.entries()) {
+      db.set(id, user);
+    }
   }
 }

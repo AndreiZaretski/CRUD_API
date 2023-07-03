@@ -201,8 +201,7 @@ describe('API tests scenario 3 with invalid input and others variable', () => {
     expect(response.text).toEqual(responseMessages.nonRequiredBodyFields);
   });
 
-  test('DELETE user with wrong ID and delete with right ID again', async () => {
-    //const wrongId = userId2.slice(-1);
+  test('DELETE user with wrong path and delete with right ID again', async () => {
     let response = await request(serverUrl).delete(`/api/users/${userId3}/wrongPass`);
     expect(response.status).toBe(404);
     expect(response.text).toEqual(responseMessages.invaldRequest);

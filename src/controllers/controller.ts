@@ -5,6 +5,7 @@ import { HelpController } from './helpController';
 import { validate as checkId } from 'uuid';
 import { sendError } from '../helpers/sendError';
 import { responseMessages } from '../helpers/messages';
+import { db } from '../db';
 
 export class Controller {
   static async getAllUser(req: IncomingMessage, res: ServerResponse) {
@@ -12,6 +13,7 @@ export class Controller {
       const allUsers = await HelpController.getArrayFromDb();
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(allUsers));
+      process.send?.({ type: 'db', data: JSON.stringify(Array.from(db.entries())) });
     } catch (err) {
       sendError(res, 500, responseMessages.errorServer);
     }
@@ -24,6 +26,7 @@ export class Controller {
         if (userById) {
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(userById));
+          process.send?.({ type: 'db', data: JSON.stringify(Array.from(db.entries())) });
         } else {
           sendError(res, 404, `User with id ${id} not found`);
         }
@@ -41,7 +44,7 @@ export class Controller {
       req.on('data', (chunk) => {
         body += chunk.toString();
       });
-      req.on('end', () => {
+      req.on('end', async () => {
         try {
           const { username, age, hobbies } = myBoDyParser(body);
           if (
@@ -51,16 +54,18 @@ export class Controller {
             typeof age === 'number' &&
             hobbies &&
             Array.isArray(hobbies) &&
-            hobbies.every((item) => typeof item === 'string')
+            hobbies.every((item) => typeof item === 'string') &&
+            Object.keys(myBoDyParser(body)).length === 3
           ) {
             const data: UserDataRequest = {
               username,
               age,
               hobbies,
             };
-            const user: User = HelpController.addUserOnDb(data);
+            const user: User = await HelpController.addUserOnDb(data);
             res.writeHead(201, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(user));
+            process.send?.({ type: 'db', data: JSON.stringify(Array.from(db.entries())) });
           } else {
             sendError(res, 400, responseMessages.nonRequiredBodyFields);
           }
@@ -77,12 +82,12 @@ export class Controller {
     try {
       if (checkId(id)) {
         const isUserExist = HelpController.checkUserExistInDb(id);
-        if (isUserExist) {
+        if (await isUserExist) {
           let body = '';
           req.on('data', (chunk) => {
             body += chunk.toString();
           });
-          req.on('end', () => {
+          req.on('end', async () => {
             try {
               const { username, age, hobbies } = myBoDyParser(body);
               if (
@@ -92,16 +97,18 @@ export class Controller {
                 typeof age === 'number' &&
                 hobbies &&
                 Array.isArray(hobbies) &&
-                hobbies.every((item) => typeof item === 'string')
+                hobbies.every((item) => typeof item === 'string') &&
+                Object.keys(myBoDyParser(body)).length === 3
               ) {
                 const data: UserDataRequest = {
                   username,
                   age,
                   hobbies,
                 };
-                const user: User = HelpController.updateUserInDb(data, id);
+                const user = await HelpController.updateUserInDb(data, id);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(user));
+                process.send?.({ type: 'db', data: JSON.stringify(Array.from(db.entries())) });
               } else {
                 sendError(res, 400, responseMessages.nonRequiredBodyFields);
               }
@@ -124,10 +131,11 @@ export class Controller {
     try {
       if (checkId(id)) {
         const isUserExist = HelpController.checkUserExistInDb(id);
-        if (isUserExist) {
+        if (await isUserExist) {
           HelpController.deleteUserFromDB(id);
           res.writeHead(204, { 'Content-Type': 'text/plain' });
           res.end();
+          process.send?.({ type: 'db', data: JSON.stringify(Array.from(db.entries())) });
         } else {
           sendError(res, 404, `User with id ${id} not found`);
         }
